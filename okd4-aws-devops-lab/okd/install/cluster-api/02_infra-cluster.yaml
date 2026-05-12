@@ -1,0 +1,206 @@
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta2
+kind: AWSCluster
+metadata:
+  creationTimestamp: null
+  name: okd-cs4l2
+  namespace: openshift-cluster-api-guests
+spec:
+  additionalTags:
+    kubernetes.io/cluster/okd-cs4l2: owned
+  bastion:
+    enabled: false
+  controlPlaneEndpoint:
+    host: ""
+    port: 0
+  controlPlaneLoadBalancer:
+    additionalListeners:
+    - healthCheck:
+        intervalSeconds: 10
+        path: /healthz
+        port: "22623"
+        protocol: HTTPS
+        thresholdCount: 2
+        timeoutSeconds: 10
+        unhealthyThresholdCount: 2
+      port: 22623
+      protocol: TCP
+    crossZoneLoadBalancing: true
+    healthCheck:
+      intervalSeconds: 10
+      thresholdCount: 2
+      timeoutSeconds: 10
+      unhealthyThresholdCount: 2
+    healthCheckProtocol: HTTPS
+    ingressRules:
+    - cidrBlocks:
+      - 10.0.0.0/16
+      description: Machine Config Server internal traffic from cluster
+      fromPort: 22623
+      protocol: tcp
+      toPort: 22623
+    loadBalancerType: nlb
+    name: okd-cs4l2-int
+    scheme: internal
+  network:
+    additionalControlPlaneIngressRules:
+    - description: MCS traffic from cluster network
+      fromPort: 22623
+      protocol: tcp
+      sourceSecurityGroupRoles:
+      - node
+      - controlplane
+      - apiserver-lb
+      toPort: 22623
+    - description: controller-manager
+      fromPort: 10257
+      protocol: tcp
+      sourceSecurityGroupRoles:
+      - controlplane
+      - node
+      toPort: 10257
+    - description: kube-scheduler
+      fromPort: 10259
+      protocol: tcp
+      sourceSecurityGroupRoles:
+      - controlplane
+      - node
+      toPort: 10259
+    - cidrBlocks:
+      - 0.0.0.0/0
+      description: Bootstrap SSH Access
+      fromPort: 22
+      protocol: tcp
+      toPort: 22
+    cni:
+      cniIngressRules:
+      - description: ICMP
+        fromPort: -1
+        protocol: icmp
+        toPort: -1
+      - description: Port 22 (TCP)
+        fromPort: 22
+        protocol: tcp
+        toPort: 22
+      - description: Port 4789 (UDP) for VXLAN
+        fromPort: 4789
+        protocol: udp
+        toPort: 4789
+      - description: Port 6081 (UDP) for geneve
+        fromPort: 6081
+        protocol: udp
+        toPort: 6081
+      - description: Port 500 (UDP) for IKE
+        fromPort: 500
+        protocol: udp
+        toPort: 500
+      - description: Port 4500 (UDP) for IKE NAT
+        fromPort: 4500
+        protocol: udp
+        toPort: 4500
+      - description: ESP
+        fromPort: -1
+        protocol: "50"
+        toPort: -1
+      - description: Port 6441-6442 (TCP) for ovndb
+        fromPort: 6441
+        protocol: tcp
+        toPort: 6442
+      - description: Port 9000-9999 for node ports (TCP)
+        fromPort: 9000
+        protocol: tcp
+        toPort: 9999
+      - description: Port 9000-9999 for node ports (UDP)
+        fromPort: 9000
+        protocol: udp
+        toPort: 9999
+      - description: Service node ports (TCP)
+        fromPort: 30000
+        protocol: tcp
+        toPort: 32767
+      - description: Service node ports (UDP)
+        fromPort: 30000
+        protocol: udp
+        toPort: 32767
+    nodePortIngressRuleCidrBlocks:
+    - 10.0.0.0/16
+    subnets:
+    - availabilityZone: us-east-1a
+      cidrBlock: 10.0.0.0/19
+      id: okd-cs4l2-subnet-private-us-east-1a
+      isPublic: false
+    - availabilityZone: us-east-1a
+      cidrBlock: 10.0.192.0/22
+      id: okd-cs4l2-subnet-public-us-east-1a
+      isPublic: true
+    - availabilityZone: us-east-1b
+      cidrBlock: 10.0.32.0/19
+      id: okd-cs4l2-subnet-private-us-east-1b
+      isPublic: false
+    - availabilityZone: us-east-1b
+      cidrBlock: 10.0.196.0/22
+      id: okd-cs4l2-subnet-public-us-east-1b
+      isPublic: true
+    - availabilityZone: us-east-1c
+      cidrBlock: 10.0.64.0/19
+      id: okd-cs4l2-subnet-private-us-east-1c
+      isPublic: false
+    - availabilityZone: us-east-1c
+      cidrBlock: 10.0.200.0/22
+      id: okd-cs4l2-subnet-public-us-east-1c
+      isPublic: true
+    - availabilityZone: us-east-1d
+      cidrBlock: 10.0.96.0/19
+      id: okd-cs4l2-subnet-private-us-east-1d
+      isPublic: false
+    - availabilityZone: us-east-1d
+      cidrBlock: 10.0.204.0/22
+      id: okd-cs4l2-subnet-public-us-east-1d
+      isPublic: true
+    - availabilityZone: us-east-1e
+      cidrBlock: 10.0.128.0/19
+      id: okd-cs4l2-subnet-private-us-east-1e
+      isPublic: false
+    - availabilityZone: us-east-1e
+      cidrBlock: 10.0.208.0/22
+      id: okd-cs4l2-subnet-public-us-east-1e
+      isPublic: true
+    - availabilityZone: us-east-1f
+      cidrBlock: 10.0.160.0/19
+      id: okd-cs4l2-subnet-private-us-east-1f
+      isPublic: false
+    - availabilityZone: us-east-1f
+      cidrBlock: 10.0.212.0/22
+      id: okd-cs4l2-subnet-public-us-east-1f
+      isPublic: true
+    vpc:
+      cidrBlock: 10.0.0.0/16
+  region: us-east-1
+  s3Bucket:
+    bestEffortDeleteObjects: false
+    name: openshift-bootstrap-data-okd-cs4l2
+    presignedURLDuration: 1h0m0s
+  secondaryControlPlaneLoadBalancer:
+    crossZoneLoadBalancing: true
+    healthCheck:
+      intervalSeconds: 10
+      thresholdCount: 2
+      timeoutSeconds: 10
+      unhealthyThresholdCount: 2
+    healthCheckProtocol: HTTPS
+    ingressRules:
+    - cidrBlocks:
+      - 0.0.0.0/0
+      description: Kubernetes API Server traffic for public access
+      fromPort: 6443
+      protocol: tcp
+      toPort: 6443
+    loadBalancerType: nlb
+    name: okd-cs4l2-ext
+    scheme: internet-facing
+status:
+  networkStatus:
+    apiServerElb:
+      attributes: {}
+    secondaryAPIServerELB:
+      attributes: {}
+  ready: false

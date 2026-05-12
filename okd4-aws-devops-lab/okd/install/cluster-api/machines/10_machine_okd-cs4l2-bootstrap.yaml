@@ -1,0 +1,18 @@
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: Machine
+metadata:
+  creationTimestamp: null
+  labels:
+    cluster.x-k8s.io/control-plane: ""
+  name: okd-cs4l2-bootstrap
+spec:
+  bootstrap:
+    dataSecretName: okd-cs4l2-bootstrap
+  clusterName: okd-cs4l2
+  infrastructureRef:
+    apiVersion: infrastructure.cluster.x-k8s.io/v1beta2
+    kind: AWSMachine
+    name: okd-cs4l2-bootstrap
+status:
+  bootstrapReady: false
+  infrastructureReady: false

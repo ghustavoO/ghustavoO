@@ -1,0 +1,35 @@
+# Terraform
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.backup
+terraform/.terraform.lock.hcl
+terraform/terraform.tfvars
+
+# OKD
+okd/install/auth/
+okd/install/*.ign
+okd/ignition/
+okd/metadata.json
+okd/install-config.yaml
+
+# Pull Secret
+okd/pull-secret.txt
+
+# SSH
+ssh/id_rsa
+ssh/id_rsa.pub
+
+# Binários OKD/OpenShift
+okd/binaries/
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Linux
+*.swp
+*.swo
+*~
